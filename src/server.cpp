@@ -32,20 +32,26 @@ void Server::run() {
     while (true) {
         sockaddr_in clientAddress;
         socklen_t clientAddressSize = sizeof(clientAddress);
-        int clientSocket = accept(currentSocket, (struct sockaddr*)&clientAddress, &clientAddressSize);
-        if (clientSocket == -1) {
+        int sendSocket = accept(currentSocket, (struct sockaddr*)&clientAddress, &clientAddressSize);
+        int recvSocket = accept(currentSocket, (struct sockaddr*)&clientAddress, &clientAddressSize);
+        if (sendSocket == -1 || recvSocket == -1) {
             std::cerr << "Error accepting connection\n";
             continue;
         }
 
         std::cout << "Connection established with client\n";
 
-        std::thread receiveThread(receiveMessages, clientSocket);
-        std::thread sendThread(sendMessages, clientSocket);
+        std::thread receiveThread(receiveMessages, recvSocket);
+        std::thread sendThread(sendMessages, sendSocket);
 
         receiveThread.join();
         sendThread.join();
 
-        close(clientSocket);
+        close(sendSocket);
+        close(recvSocket);
     }
+}
+
+Server::~Server() {
+    close(currentSocket);
 }

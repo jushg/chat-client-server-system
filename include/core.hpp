@@ -9,30 +9,27 @@
 #include <thread>
 #include <chrono>
 
-
+bool receiveWithLengthAndAck(int clientSocket);
 void receiveMessages(int clientSocket);
 void sendMessages(int clientSocket);
+void sendWithLengthAndWaitAck(int clientSocket, char* buffer, size_t len);
 
-class SocketBase {
-protected:
-    sockaddr_in serverAddress;
-    int currentSocket;
-public:
-    ~SocketBase() {
-        close(currentSocket);
-    }
-};
-
-class Client: public SocketBase {
+class Client {
+sockaddr_in serverAddress;
+int recvSocket, sendSocket;
 public:
     Client (int port, char* ip);
+    ~Client();
     int initConnect();
     void run();
 };
 
-class Server: public SocketBase {
+class Server {
+    sockaddr_in serverAddress;
+    int currentSocket;
 public:
     Server(int port);
+    ~Server();
     int initConnect();
 
     void run();
