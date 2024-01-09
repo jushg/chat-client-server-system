@@ -8,11 +8,21 @@
 #include <iostream>
 #include <thread>
 #include <chrono>
+#include <atomic>
 
-bool receiveWithLengthAndAck(int clientSocket);
-void receiveMessages(int clientSocket);
-void sendMessages(int clientSocket);
-void sendWithLengthAndWaitAck(int clientSocket, char* buffer, size_t len);
+void receiveMessages(int clientSocket, std::atomic<int>& isConnected);
+void sendMessages(int clientSocket, std::atomic<int>& isConnected);
+
+
+#define CONNECTED 1
+#define DISCONNECTED 0
+
+
+const std::string CLOSE_CONNECTION_ERR = "Connection closed by other side\n";
+const std::string MESSAGE_LENGTH_SIZE_ERR = "Error receiving message length\n";
+const std::string ACK_RECV_ERR = "Error receiving acknowledgement status\n";
+const std::string ACK_STATUS_RECV_ERR = "Error sending, other side send error\n";
+const std::string SOCKET_CREATION_ERR = "Error creating socket\n";
 
 class Client {
 sockaddr_in serverAddress;
@@ -31,7 +41,6 @@ public:
     Server(int port);
     ~Server();
     int initConnect();
-
     void run();
 };
 

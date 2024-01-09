@@ -2,8 +2,10 @@
 
 int main() {
     int type, port; 
-    std::cin >> type;
     std::string ip;
+
+    std::cout << "Basic usage: If starting as client input 0 [host-ip] [port], if starting as server input 1 [port]\n";
+    std::cin >> type;
     if(type == 0) {
         std::cin >> ip >> port;
         std::cin.ignore();
